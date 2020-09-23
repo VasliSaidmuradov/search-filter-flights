@@ -1,0 +1,9 @@
+@import 'variables';
+@import 'fonts';
+@import 'normalize';
+
+@media screen and (max-width: 520px) {
+  .--web {
+    display: none;
+  }
+}
