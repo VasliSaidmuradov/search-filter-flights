@@ -19,7 +19,7 @@
         >
       </b-col>
       <b-col cols="12" lg="9" md="12" class="main__content">
-        <p v-if="!flightList.length">{{ message }}</p>
+        <!-- <p v-if="!flightList.length">{{ message }}</p> -->
         <Cart
           v-for="flight in flightList"
           :key="flight.id"
@@ -94,7 +94,6 @@ export default {
       this.flightList = [...res];
     },
     clearFilters() {
-      console.log(this.$refs.filter);
       this.$refs.filter.forEach((el) => el.clear());
     },
   },
