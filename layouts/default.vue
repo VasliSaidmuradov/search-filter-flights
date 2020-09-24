@@ -5,13 +5,13 @@
   </div>
 </template>
 <script>
-import Header from "@/components/common/Header"
+import Header from "@/components/common/Header";
 
 export default {
   components: {
     Header,
-  }
-}
+  },
+};
 </script>
 <style lang="scss" scoped>
 .layout {

@@ -2,11 +2,16 @@
   <div class="filter">
     <h3 class="filter__title">{{ filter.title }}</h3>
     <div class="filter__items">
-      <label class="filter__checkbox" v-for="item in filter.items" :key="item.code">
+      <label
+        class="filter__checkbox"
+        v-for="item in filter.items"
+        :key="item.code"
+      >
         <input
           type="checkbox"
           :value="item.id"
-          @change="onFilterChange"
+          @change="addFields(item.code)"
+          :checked="filterFields.includes(item.code)"
           class="filter__checkbox-input"
         />
         <div class="filter__checkmark"></div>
@@ -24,9 +29,38 @@ export default {
       default: () => {},
     },
   },
+  data() {
+    return {
+      filterFields: [],
+    };
+  },
+  computed: {},
   methods: {
-    onFilterChange(e) {
-      console.log("event: ", e);
+    addFields(f) {
+      if (typeof f === "number") return; // для фильтра "опции тарифа"
+      if (f === "ALL" && !this.filterFields.includes("ALL")) {
+        this.filterFields = [];
+        this.filter.items.forEach((el) => {
+          this.filterFields.push(el.code);
+        });
+        this.$emit("filter-fields", this.filterFields);
+        return;
+      }
+      if (f === "ALL" && this.filterFields.includes("ALL")) {
+        this.filterFields = [];
+        this.$emit("filter-fields", this.filterFields);
+        return;
+      }
+      if (this.filterFields.includes(f)) {
+        this.filterFields = this.filterFields.filter((el) => el !== f);
+        this.$emit("filter-fields", this.filterFields);
+        return;
+      }
+      this.filterFields.push(f);
+      this.$emit("filter-fields", this.filterFields);
+    },
+    clear() {
+      this.filterFields = [];
     },
   },
 };
@@ -34,7 +68,6 @@ export default {
 
 <style lang="scss" scoped>
 .filter {
-  // max-height: 320px;
   background-color: var(--bg2);
   padding: 12px;
   margin-bottom: 12px;
@@ -88,8 +121,8 @@ export default {
   border-radius: 2px;
 }
 ::-webkit-scrollbar-track {
-   box-shadow: inset 0 0 10px 10px var(--bg2);
-    border: solid 2px transparent;
+  box-shadow: inset 0 0 10px 10px var(--bg2);
+  border: solid 2px transparent;
 }
 ::-webkit-scrollbar-thumb {
   box-shadow: inset 0 0 10px 10px var(--middle-gray);

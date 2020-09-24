@@ -1,7 +1,5 @@
 <template>
   <div class="cart">
-    <!-- {{ itineraries.segments.length }} -->
-    <!-- {{ layover }} -->
     <div class="cart__main">
       <header class="d-flex">
         <div class="cart__airline">
@@ -13,8 +11,8 @@
           <span class="cart__airline-name">{{ airline }}</span>
         </div>
         <div class="cart__dep-arr --dep">
-          <p class="cart__dep-arr-date">25 ноя, вс</p>
-          <p class="cart__dep-arr-time">23:25</p>
+          <p class="cart__dep-arr-date">{{ origin.dep_time.slice(0, 10) }}</p>
+          <p class="cart__dep-arr-time">{{ origin.dep_time.slice(-5) }}</p>
         </div>
         <div class="cart__flight-info">
           <div class="cart__flight">
@@ -23,27 +21,38 @@
             <span class="cart__flight-to">{{ dest.dest_code }}</span>
             <div class="cart__flight-dot"></div>
           </div>
-          <p class="cart__flight-stops">{{ layover ? `через ${layover}, ${'1 ч 50 м'}` : 'прямой'}}</p>
+          <p class="cart__flight-stops">
+            {{ layover ? `через ${layover}` : "прямой" }}
+          </p>
         </div>
         <div class="cart__dep-arr --arr">
-          <p class="cart__dep-arr-date">26 ноя, пн</p>
-          <p class="cart__dep-arr-time">03:45</p>
+          <p class="cart__dep-arr-date">{{ dest.arr_time.slice(0, 10) }}</p>
+          <p class="cart__dep-arr-time">
+            {{
+              dest.arr_time
+                .match(/([01]?[0-9]|2[0-3]):[0-5][0-9](:[0-5][0-9])?/g)
+                .join("")
+            }}
+          </p>
         </div>
       </header>
       <footer class="d-flex">
         <Btn link class="cart__footer-link">Детали перелета</Btn>
         <Btn link class="cart__footer-link">Условия тарифа</Btn>
         <p v-if="!flight.refundable" class="cart__footer-info-text">
-          <NonRefundeble class="cart__footer-info-icon" /><span class="--web">невозвратный</span>
+          <NonRefundeble class="cart__footer-info-icon" /><span class="--web"
+            >невозвратный</span
+          >
         </p>
       </footer>
     </div>
     <div class="cart__aside">
-      <div class="cart__total-cost">{{ flight.price }} {{ currency[flight.currency] }}</div>
+      <div class="cart__total-cost">
+        {{ flight.price }} {{ currency[flight.currency] }}
+      </div>
       <Btn class="cart__order-btn">Выбрать</Btn>
       <p class="cart__cost-info --web">Цена за всех пассажиров</p>
       <div class="cart__luggage">
-        <!-- {{ flight.services }} -->
         <span class="cart__luggage-info">Нет багажа</span>
         <button class="cart__luggage-add">+ Добавить багаж</button>
       </div>
@@ -67,33 +76,38 @@ export default {
   data() {
     return {
       currency: {
-        KZT: '₸',
-        USD: '$',
-        EUR: '€',
-      }
-    }
+        KZT: "₸",
+        USD: "$",
+        EUR: "€",
+      },
+    };
   },
   computed: {
     itineraries() {
-      const itineraries = this.flight.itineraries.flat()[0]
-      return itineraries
+      const itineraries = this.flight.itineraries.flat()[0];
+      return itineraries;
     },
     origin() {
-      const origin = this.itineraries.segments[0]
-      return origin
+      const origin = this.itineraries.segments[0];
+      return origin;
     },
     dest() {
-      const dest = this.itineraries.segments[this.itineraries.segments.length - 1]
-      return dest
+      const dest = this.itineraries.segments[
+        this.itineraries.segments.length - 1
+      ];
+      return dest;
     },
     layover() {
-      let res = null
-      const segments = [...this.itineraries.segments]
-      if (segments.length === 1) return res
-      if (segments.length === 2) return res = segments[0].dest
-      return segments.slice(0, -1).map(el => el.dest).join(',')
-    }
-  }
+      let res = null;
+      const segments = [...this.itineraries.segments];
+      if (segments.length === 1) return res;
+      if (segments.length === 2) return (res = segments[0].dest);
+      return segments
+        .slice(0, -1)
+        .map((el) => el.dest)
+        .join(",");
+    },
+  },
 };
 </script>
 
@@ -135,7 +149,6 @@ export default {
   }
 
   &__dep-arr {
-    // max-width: fit-content;
     &-date {
       font-size: 12px;
     }
