@@ -1,12 +1,21 @@
 <template>
   <b-container class="main">
+    <pre>
+      <!-- {{ flights[1].itineraries[0][0].arr_date }}
+      {{ new Date(flights[1].itineraries[0][0].arr_date).getHours() }}
+      {{ new Date(flights[1].itineraries[0][0].arr_date).getMinutes() }}
+      {{ new Date(flights[1].itineraries[0][0].arr_date) }}
+      {{ new Date(flights[1].itineraries[0][0].arr_date) }}
+      {{ new Date(flights[1].itineraries[0][0].arr_date) }} -->
+      <!-- {{ airlines }}  -->
+    </pre>
     <b-row class="main__row">
       <b-col cols="12" lg="3" md="12" class="main__filter">
-        <Filters v-for="filter in filters" :key="filter.id" :filter="filter" class="main__filter-item" />
+        <Filters v-for="filter in filterList" :key="filter.id" :filter="filter" class="main__filter-item" />
         <Btn class="main__filter-reset-btn" link>Сбросить все фильтры</Btn>
       </b-col>
       <b-col cols="12" lg="9" md="12" class="main__content">
-        <Cart v-for="cart in 4" :key="cart" class="main__cart" />
+        <Cart v-for="flight in flights" :key="flight.id" class="main__cart" :flight="flight" :airline="airlines[flight.validating_carrier]" />
       </b-col>
     </b-row>
   </b-container>
@@ -16,6 +25,7 @@
 import Filters from "@/components/common/Filter.vue";
 import Btn from "@/components/buttons/Btn.vue";
 import Cart from "@/components/common/Cart.vue";
+import { mapGetters } from 'vuex'
 
 export default {
   components: {
@@ -23,6 +33,7 @@ export default {
     Btn,
     Cart,
   },
+  middleware: ['home'],
   data() {
     return {
       filters: [
@@ -35,28 +46,25 @@ export default {
             { code: 2, name: "Только возвратные" },
           ],
         },
-        {
-          id: 2,
-          title: "Авиакомпании",
-          items: [
-            { code: "ALL", name: "Все" },
-            { code: "KC", name: "Air Astana" },
-            { code: "HY", name: "Uzbekistan Airways" },
-            { code: "EK", name: "Emirates" },
-            { code: "HR", name: "HR" },
-            { code: "FZ", name: "Flydubai" },
-            { code: "S7", name: "S7 Airlines" },
-            { code: "LH", name: "Lufthansa" },
-            { code: "BT", name: "Air Baltic" },
-            { code: "CZ", name: "China Southern Airlines" },
-            { code: "SU", name: "Aeroflot" },
-            { code: "B2", name: "Belavia" },
-            { code: "DV", name: "SCAT Airlines" },
-            { code: "TK", name: "Turkish Airlines" },
-          ],
-        },
       ],
     };
+  },
+  mounted() { console.log(this.airlines)},
+  computed: {
+    ...mapGetters({
+      airlines: 'GET_AIRLINES',
+      flights: 'GET_FLIGHTS',
+    }),
+    filterList() {
+      const filter = [...this.filters]
+      const airlines = {...this.airlines}
+      const items = [{ code: "ALL", name: "Все" }]
+      for (const [key, value] of Object.entries(airlines)) {
+        items.push({ code: key, name: value })
+      }
+      filter.push({ id: 2, title: "Авиакомпании", items })
+      return filter
+    }
   },
 };
 </script>
@@ -85,7 +93,7 @@ export default {
       flex-wrap: wrap;
       justify-content: space-between;
       position: relative;
-      
+
       &-item {
       width: 48%;
       }
